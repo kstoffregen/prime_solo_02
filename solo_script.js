@@ -1,51 +1,55 @@
-// ! ! !
-// Three Bugs
-// 1. Changed <array[i] = calculateSTI(array);> to <array[i] = calculateSTI(array[i]);> in for loop
-// 2. Changed <return basePercent - 1;> to <return basePercent;> in getBaseSTI function
-// 3. Added Math.round() to <newArray[2] = baseSalary * (1.0 + bonus);> and <newArray[3] = baseSalary * bonus;>
-// 4. Added .join(', ') to end of <array[i] = calculateSTI(array[i]);> to add space between elements
+'use strict'
+var Employee = function(name, employeeNumber, baseSalary, reviewScore){
+  this.name = name;
+  this.employeeNumber = employeeNumber;
+  this.baseSalary = baseSalary;
+  this.reviewScore = reviewScore;
+};
 
-var arrayAtticus = ["Atticus", "2405", "47000", 3];
-var arrayJem = ["Jem", "62347", "63500", 4];
-var arrayBoo = ["Boo", "11435", "54000", 3];
-var arrayScout = ["Scout", "6243", "74750", 5];
+var EmployeeAltered = function(name, bonusSTI, adjCompensation, bonusTotal){
+    this.name = name;
+    this.bonusSTI = bonusSTI;
+    this.adjCompensation = adjCompensation;
+    this.bonusTotal = bonusTotal;
+  };
 
-var array = [arrayAtticus, arrayJem, arrayBoo, arrayScout];
+var Atticus = new Employee("Atticus", "2405", "47000", 3);
+var Jem = new Employee("Jem", "62347", "63500", 4);
+var Boo = new Employee("Boo", "11435", "54000", 3);
+var Scout = new Employee("Scout", "6243", "74750", 5);
 
-//Create variables used to write to the DOM
+var array = [Atticus, Jem, Boo, Scout];
+
 var newEl, newText, position;
-//Capture the position of insertion into the DOM
 position = document.getElementById('content');
 
-//Loop the array, extracting each array and writing information to the DOM
-//Note that the information is not 'clean'
 for(var i = 0; i < array.length; i++){
-  array[i] = calculateSTI(array[i]).join(', ');
+  var result = calculateSTI(array[i]);
   newEl = document.createElement('li');
-  newText = document.createTextNode(array[i]);
+  newText = document.createTextNode(result.name + ", " + result.bonusSTI + ", " + result.adjCompensation + ", " + result.bonusTotal);
   newEl.appendChild(newText);
   position.appendChild(newEl);
+  console.log(calculateSTI(array[i]));
 }
 
-function calculateSTI(array){
-  var newArray = [];
+function calculateSTI(employee){
+  // var result = '';
+  var name = employee.name;
+  var employeeNumber = employee.employeeNumber;
+  var baseSalary = employee.baseSalary;
+  var reviewScore = employee.reviewScore;
 
-  newArray[0] = array[0];
+  var bonusSTI = getBaseSTI(reviewScore) + getYearAdjustment(employeeNumber) - getIncomeAdjustment(baseSalary);
 
-  var employeeNumber = array[1];
-  var baseSalary = array[2];
-  var reviewScore = array[3];
+  if(bonusSTI > 0.13){
+    bonusSTI = 0.13;
+  } 
 
-  var bonus = getBaseSTI(reviewScore) + getYearAdjustment(employeeNumber) - getIncomeAdjustment(baseSalary);
-  if(bonus > 0.13){
-    bonus = 0.13;
-  }
-
-  newArray[1] = bonus;
-  newArray[2] = Math.round(baseSalary * (1.0 + bonus));
-  newArray[3] = Math.round(baseSalary * bonus);
-  console.log(newArray[0] + " " + newArray[1] + " " + newArray[2] + " " + newArray[3]);
-  return newArray;
+  var name = employee.name;
+  var adjCompensation = Math.round(baseSalary * (1.0 + bonusSTI));
+  var bonusTotal = Math.round(baseSalary * bonusSTI);
+  var result = new EmployeeAltered(name, bonusSTI, adjCompensation, bonusTotal);
+  return result;
 }
 
 function getBaseSTI(reviewScore){
@@ -67,7 +71,7 @@ function getBaseSTI(reviewScore){
       basePercent = 0.10;
       break;
   }
-  return basePercent; //- 1;
+  return basePercent;
 }
 
 function getYearAdjustment(employeeNumber){
